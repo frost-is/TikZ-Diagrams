@@ -1,0 +1,63 @@
+\usepackage{circuitikz}
+
+\begin{circuitikz}
+    % Define gates style
+    \ctikzset{
+        logic ports=ieee,
+        logic ports/scale=0.7,
+    }
+    
+    % Draw the gates and wires
+    \node [and port] (and1) at (0,0) {};
+    \node [and port, below=of and1] (and2) {};
+    \node [and port, below=of and2] (and3) {};
+    \node [and port, below=of and3] (and4) {};
+    \node [and port, right=5cm of and1, anchor = in 1] (and5) {};
+    \node [xor port, right=of and3, anchor = in 2] (xor1) {};
+    \node [and port, right=of and2, anchor = in 1] (and6) {};
+    \node [xor port, right=2.5cm of and6, anchor = in 2] (xor2) {};
+   % \node [xor port, right=of and5] (xor1) {};
+    
+    % Connect the gates
+    %First stage
+    %First and
+    \draw (and1.out) -- (and5.in 1);
+    \draw (and5.in 1) --++ (-0.5,0) node[circ]{} |- (xor2.in 1); %It's a bit easier to work from the input of the receiving node than the output of the original node 
+    % Second AND
+    \draw (and2.out) -- (and6.in 1);
+    \draw (and2.out) -- ++(0.6,0) |- (xor1.in 1);
+    % Third AND
+    \draw (and3.out) -- (xor1.in 2);
+    \draw (and3.out) --++(0.3,0) node[circ]{} |-(and6.in 2);
+    %Fourth AND
+    \draw (and4.out) --++(6.5,0);
+
+    %% Second stage
+    \draw (xor1.out) --++(4,0);
+    \draw (and6.out) -- (xor2.in 2);
+    \draw (and6.out) --++(1,0) node[circ]{} |- (and5.in 2);
+    %% Third Stage
+    
+    %\draw (xor2.out) --++(0.5,0);
+    
+    % Outputs
+    %\draw (and1.out) -- ++(1,0) |- (or1.in 1);
+    
+    % Label the inputs
+    \node [left] at (and1.in 1) {B1};
+    \node [left] at (and1.in 2) {A1};
+    \node [left] at (and2.in 1) {A1};
+    \node [left] at (and2.in 2) {B0};
+    \node [left] at (and3.in 1) {B1};
+    \node [left] at (and3.in 2) {A0};
+    \node [left] at (and4.in 1) {A0};
+    \node [left] at (and4.in 2) {B0};
+    
+    % Label the outputs
+    \node [right] at (and5.out) {P3};
+    \node [right] at (xor2.out) {P2};
+    \node [right = 4 of xor1.out] {P1};
+    \node [right = 6.5 of and4.out] {P0};
+    
+\end{circuitikz}
+

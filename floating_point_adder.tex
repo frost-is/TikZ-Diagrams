@@ -1,0 +1,112 @@
+\usepackage{circuitikz}
+
+\begin{circuitikz}
+\tikzset{ALU/.style={muxdemux,
+  muxdemux def={Lh=5, NL=2, Rh=2, NR=1, NB=0, NT=0, w=2,
+  inset w=0.5, inset Lh=1, inset Rh=0, square pins=1}},
+  ALU label/.style={label=center:{\parbox{1cm}{\centering#1}}}
+}
+
+\tikzset{ALU2/.style={muxdemux,
+  muxdemux def={Lh=5, NL=2, Rh=2, NR=1, NB=0, NT=1, w=2,
+  inset w=0.5, inset Lh=1, inset Rh=0, square pins=1}},
+  ALU label/.style={label=center:{\parbox{1cm}{\centering#1}}}
+}
+
+\tikzset{mux/.style={muxdemux,
+  muxdemux def={Lh=5, NL=2, Rh=2, NR=1, NB=1, NT=0, w=2,
+  inset w=0.5, inset Lh=0, inset Rh=0, square pins=1}},
+  ALU label/.style={label=center:{\parbox{1cm}{\centering#1}}}
+}
+\tikzset{mux2/.style={muxdemux,
+  muxdemux def={Lh=5, NL=2, Rh=2, NR=1, NB=0, NT=1, w=2,
+  inset w=0.5, inset Lh=0, inset Rh=0, square pins=1}},
+  ALU label/.style={label=center:{\parbox{1cm}{\centering#1}}}
+}
+
+\ctikzset{
+        logic ports=ieee,
+        logic ports/scale=0.7,
+    }
+%%Begin upper block
+\node (operands) [draw, minimum width=8.55cm, minimum height=1cm, align=center] {Operands};
+\node (signs) [draw, below=0cm  of operands.south west, anchor = north west, minimum width=2cm, minimum height=1cm, align=center] {Signs};
+\node (exponents) [draw, right=0cm of signs, minimum width=2.3cm, minimum height=1cm, align=center] {Exponents};
+\node [draw, below=0cm of operands.south east, anchor = north east, minimum width=3cm, minimum height=1cm, align=center]  (mantissa) {Mantissa (1.significand)};
+
+% Arrows for A and B
+\draw [-latex] ($(operands.north west)!0.25!(operands.north)$) ++(0,0.5) -- node[near start, above=0.25] {A} ($(operands.north west)!0.25!(operands.north)$);
+\draw [-latex] ($(operands.north east)!0.25!(operands.north)$) ++(0,0.5) -- node[near start, above=0.25] {B} ($(operands.north east)!0.25!(operands.north)$);
+
+%% The signs
+
+\node (sign_comp) [draw, xor port, below = 7 of signs.south, anchor = east, rotate=-90, align = center] {};
+\draw[] ($(signs.south east)!0.8!(signs.south)$) -- (sign_comp.in 1);
+\draw[] ($(signs.south west)!0.8!(signs.south)$) -- (sign_comp.in 2);
+%\draw[] ($(signs.south west)!0.5!(signs.south)$) -- ($(sign_comp.north west)!0.5!(sign_comp.north)$){};
+%\draw[] ($(signs.south east)!0.5!(signs.south)$) -- ($(sign_comp.north east)!0.5!(sign_comp.north)$){};
+
+
+%% The exponents
+
+\node (exp_diff) [ALU2, below = 2 of exponents.south, align = center, rotate=-90, scale=0.9, anchor = rpin 1, align = center, ALU label={\scriptsize {$E_a-E_b$}}] {};
+\draw[] (exp_diff.lpin 1)++(0,0.5) -- (exp_diff.lpin 1){};
+\draw[] (exp_diff.lpin 2)++(0,0.5) -- (exp_diff.lpin 2){};
+\node[below=0 of exp_diff.north]{\footnotesize{$C_{out}$}};
+\draw (exp_diff.tpin 1) --++(0.65,0)(exp_diff.tpin 1);
+\node[draw, below = 1.5 of exp_diff.rpin 1, anchor = north] (2c) {\footnotesize{2's Complement}};
+\draw (exp_diff.rpin 1) -- (2c);
+\node[mux2, right = 0 of 2c, anchor = lpin 2, ALU label={\scriptsize {MUX}}, scale=0.6] (mux3){};
+\draw (2c.north) --++ (0,0.6)node[circ]{} -- (mux3.lpin 1);
+%% The Significand
+%\node[] at ($(mantisssa.south west)!0.5!(mantissa.south)$) (mux1){};
+%\node[] at ($(mantisssa.south east)!0.5!(mantissa.south)$) (mux2){};
+\node[mux, below = 1.25 of mantissa.south east, rotate = -90, anchor = north, scale = 0.45, ALU label={\footnotesize{MUX}}] (mux2) {};
+\node[mux, rotate = -90, scale = 0.45, left= 2 of mux2.south, anchor = south, ALU label={\footnotesize{MUX}}] (mux1) {};
+
+\draw (mux3.tpin 1) --++(0,0.5) node[circ] {} -| (mux2.bpin 1);
+\draw (mux3.tpin 1) --++(0,1.08) node[circ]{};
+\node[draw, right=1 of mux3.rpin 1, anchor = west](rshift) {\footnotesize{Right Shifter}};
+\draw (mux3.rpin 1) -- (rshift.west);
+\draw (mux2.rpin 1) --++(0,-1.45) (mux2.rpin 1);
+
+\node[xor port, below = 1 of rshift.south, anchor = north west, rotate=180, scale = 0.6] (xor){};
+\draw (rshift.south) |- (xor.in 2);
+
+%% The ADDER
+\node (adder) [ALU2, below = 0.5 of xor.out, align = center, rotate=-90, scale=0.9, anchor = lpin 1, align = center, ALU label={\footnotesize{Adder}}] {};
+\draw (xor.out) -- (adder.lpin 1);
+\draw (mux1.rpin 1) |- (adder.lpin 2);
+\node[mux, rotate = -90, scale = 0.45, left= 1 of adder.south, anchor = west, ALU label={\footnotesize{MUX}}] (mux4) {};
+\node[draw, below = 0.75 of adder.south east] (norm) {Normalization};
+\draw (mux4.rpin 1) --++(0,-0.25) -| ($(norm.north west)!0.5!(norm.north)$);
+\draw (adder.rpin 1) --++(0,-0.1) -| ($(norm.north east)!0.5!(norm.north)$);
+\node[above = 0.1 of mux4.lpin 2] {$E_a$};
+\node[above = 0.1 of mux4.lpin 1] {$E_b$};
+\node[above = 1.5 of mux4.south east, anchor = east] (cout) {$C_{out}$};
+\draw[] (cout)|-(mux4.bpin 1);
+\node[below = 0.5 of norm.south west, xshift = 0.3, anchor = north] (exp_output){\footnotesize{Result Exponent}};
+\node[below = 0.5 of norm.south east, xshift = -0.3, anchor = north] (sign_output){\footnotesize{Result Significand}};
+\draw ($(norm.south east)!0.5!(norm.south)$) --++(0,-0.25) -| (sign_output);
+\draw ($(norm.south west)!0.5!(norm.south)$) --++ (0,-0.25) -| (exp_output);
+\node[ below = 0.95 of sign_comp.east, align = center] (sign_result) {\footnotesize Result Sign};
+\draw[] (sign_comp.out) -- (sign_result.north){};
+
+%\node[mux, right = 1.5 of mux1.east, rotate = -90, anchor = east, scale = 0.45, ALU label={\footnotesize{MUX}}] (muxd2) {};
+\draw[] (mux1.lpin 1)++(0,0.875) -- (mux1.lpin 1) {};
+\draw[] (mux1.lpin 2)++(0,0.875) -- (mux1.lpin 2) {};
+\draw[] (mux2.lpin 1)++(0,0.875) -- (mux2.lpin 1) {};
+\draw[] (mux2.lpin 2)++(0,0.875) -- (mux2.lpin 2) {};
+
+%% Some more indications
+
+\node[above = 2 of sign_comp.south, anchor = east, align=center] (control) {\scriptsize Control bit\\ \tiny 0 for ADD\\ \tiny 1 for SUB};
+\draw (control.south) |- (sign_comp.south);
+
+\node [draw, right = 0.3 of adder.north west, anchor = west] (control2) {\footnotesize{Control}};
+\draw[line] (control2) |- (xor.in 1);
+\draw[line] (control2) |- (adder.tpin 1);
+%\draw[line] (adder.tpin 1) --++(-0.5,0) (adder.tpin 1);
+
+\end{circuitikz}
+

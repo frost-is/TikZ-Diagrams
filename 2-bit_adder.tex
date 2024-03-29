@@ -1,0 +1,66 @@
+\usepackage{circuitikz}
+    
+\begin{circuitikz}
+\ctikzset{
+        logic ports=ieee,
+        logic ports/scale=0.7,
+    }
+    % Draw the XOR gate with label
+    \node[xor port] (xor1) at (0,0) {};
+    %\node[left] at (xor1.in 1) {1 (High)};
+    \node[right] at (7,0) (s0) {S0};
+    \draw (xor1.out) -- ++(6.25,0);
+    % Draw the OR gate with label
+    \node[and port] (and1) at (0,-2) {};
+    \node[above] at (and1.out) {C0};
+
+
+    % Connect AND and OR gates
+    \draw (xor1.in 1) -- ++(-1,0) node[circ]{} |- (and1.in 1);
+    \draw (xor1.in 2) -- ++(-1.5,0) node[circ]{} |- (and1.in 2);
+
+    \draw (xor1.in 1) -- ++(-2,0) node[left] (A0) {A0};
+    \draw (xor1.in 2) -- ++(-2,0) node[left] (B0) {B0};
+
+%% Begin second stage
+%First XOR
+    \node[xor port] (xor2) at (0,-4) {};
+    \draw (xor2.in 1) -- ++ (-2,0) node[left] (A1) {A1};
+    \draw (xor2.in 2) -- ++ (-2,0) node[left] (B1) {B1};
+
+% AND
+
+     \node[and port] (and2) at (0,-6) {};
+    %\node[above] at (and2.out) {};
+    \draw (xor2.in 1) -- ++(-1,0) node[circ]{} |- (and2.in 1);
+    \draw (xor2.in 2) -- ++(-1.5,0) node[circ]{} |- (and2.in 2);
+    
+%Second XOR
+
+    \node[xor port, right=1.5cm of xor2, anchor = in 1] (xor3) {};at (3,-4.25) {};
+    \draw (xor2.out) -- (xor3.in 1) {};
+    \draw (and1.out) --++(1,0)(and1.out);
+    \draw (and1.out)++(1,0) |- (xor3.in 2);
+%Second AND
+
+    \node[and port, below = 0.5cm of xor3] (and3){};% at (3,-6.25) {};
+    \draw (xor2.out) ++(0.5,0) node[circ]{} |- (and3.in 2);
+    %\draw (and2.out) -- (and3.in 1);
+    \draw (and1.out)++(1,0) |- (and3.in 1);
+
+% OR
+
+    \node[or port, right = 1cm of and3, anchor = in 1] (or1){};% at (5.5,-6.5){};
+    \draw (and3.out) -- (or1.in 1) {};
+    \draw (and2.out) |-++(0.5,-1) (and2.out); 
+    \draw (and2.out)++(0.5,-1) -| (or1.in 2) {};
+
+%% Pulling all wires in a neat row, sort of
+    \draw (xor3.out) |- (7,-1);;
+    \node[below=0.5cm of s0] (s1) {S1};
+    %\node[below = 2cm of s1] at (or1.out) {C1};
+    \draw (or1.out) |- (7,-3);
+    \node[below = 1.4cm of s1]  {C1};
+    
+\end{circuitikz}
+

@@ -1,0 +1,59 @@
+\usepackage{circuitikz}
+
+
+\begin{circuitikz}
+\ctikzset{
+        logic ports=ieee,
+        logic ports/scale=0.7,
+    }
+%%Begin upper block
+\node (operands) [draw, minimum width=8.55cm, minimum height=1cm, align=center] {Operands};
+\node (signs) [draw, below=0cm  of operands.south west, anchor = north west, minimum width=2cm, minimum height=1cm, align=center] {Signs};
+\node (exponents) [draw, right=0cm of signs, minimum width=2.3cm, minimum height=1cm, align=center] {Exponents};
+\node [draw, below=0cm of operands.south east, anchor = north east, minimum width=3cm, minimum height=1cm, align=center]  (mantissa) {Mantissa (1.significand)};
+
+% Arrows for A and B
+\draw [-latex] ($(operands.north west)!0.25!(operands.north)$) ++(0,0.5) -- node[near start, above=0.25] {A} ($(operands.north west)!0.25!(operands.north)$);
+\draw [-latex] ($(operands.north east)!0.25!(operands.north)$) ++(0,0.5) -- node[near start, above=0.25] {B} ($(operands.north east)!0.25!(operands.north)$);
+
+%% The signs
+\node (sign_comp) [draw, xor port, below = 2 of signs.south, anchor = east, rotate=-90, align = center] {};
+\draw[] ($(signs.south east)!0.8!(signs.south)$) -- (sign_comp.in 1);
+\draw[] ($(signs.south west)!0.8!(signs.south)$) -- (sign_comp.in 2);
+
+%\node (sign_comp) [draw, below = 2 of signs.south, anchor = north, align = center] {Sign \\Computation};
+
+%\draw[] ($(signs.south west)!0.5!(signs.south)$) -- ($(sign_comp.north west)!0.5!(sign_comp.north)$){};
+%\draw[] ($(signs.south east)!0.5!(signs.south)$) -- ($(sign_comp.north east)!0.5!(sign_comp.north)$){};
+%\node (sign_result) [below = of sign_comp.out, anchor = north, align = center] {Result Sign};
+%\draw[] (sign_comp.out) -- (sign_result.north){};
+
+%% The exponents
+
+\node (exp_diff) [draw, below = 1 of exponents.south, align = center] {Integer\\Addition};
+\draw[] ($(exp_diff.north west)!0.5!(exp_diff.north)$)++(0,1) -- ($(exp_diff.north west)!0.5!(exp_diff.north)$){};
+\draw[] ($(exp_diff.north east)!0.5!(exp_diff.north)$)++(0,1) -- ($(exp_diff.north east)!0.5!(exp_diff.north)$){};
+
+%%The mantissa
+
+
+\node (signi_diff) [draw, below = 1 of mantissa.south, align = center] {Integer\\Multiplication};
+\draw[] ($(signi_diff.north west)!0.5!(signi_diff.north)$)++(0,1) -- ($(signi_diff.north west)!0.5!(signi_diff.north)$){};
+\draw[] ($(signi_diff.north east)!0.5!(signi_diff.north)$)++(0,1) -- ($(signi_diff.north east)!0.5!(signi_diff.north)$){};
+
+%% Normalizer
+
+\node[draw, minimum width = 6.25cm, below = 1.35 of exp_diff.south west, anchor = west](normalizer){Normalizer};
+\draw (signi_diff.south) --++(0,-1.05) (signi_diff.south);
+\draw (exp_diff.south) --++(0,-1.1) (exp_diff.south);
+
+%% Result
+\node[draw, below = of normalizer.east, anchor = east,minimum width = 8.55cm](result){Result};
+
+\draw[] (sign_comp.out) --++ (0,-2.1)(sign_comp.out){};
+\draw ($(result.north east)!0.44!(result.north)$)++(0,0.5) --  ($(result.north east)!0.44!(result.north)$);
+\draw  ($(result.north west)!0.81!(result.north)$)++(0,0.5) --  ($(result.north west)!0.81!(result.north)$);
+
+%\node[ below = 1.25 of mantissa.south east] (mux2) {};
+%\node[ rotate = -90, scale = 0.45, left= 2 of mux2.south, anchor = south, ALU label={\footnotesize{MUX}}] (mux1) {};
+\end{circuitikz}
