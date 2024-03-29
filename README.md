@@ -6,4 +6,16 @@ Thanks !
 
 # The Photos
 
-![A two-bit adder](https://github.com/frost-is/TikZ-Diagrams/blob/main/2-bit_adder.png?raw=true) 
+![A two-bit adder](https://github.com/frost-is/TikZ-Diagrams/blob/main/2-bit_adder.png?raw=true)
+
+![A two-bit multiplier](https://github.com/frost-is/TikZ-Diagrams/blob/main/2-bit_multiplier.png?raw=true)
+
+![A floating point adder](https://github.com/frost-is/TikZ-Diagrams/blob/main/Floating_point_adder.png?raw=true)
+
+![A floating point multiplier](https://github.com/frost-is/TikZ-Diagrams/blob/main/Floating_point_multiplier.png?raw=true)
+ 
+
+ 
+
+ 
+ 
