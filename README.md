@@ -6,4 +6,4 @@ Thanks !
 
 # The Photos
 
-![A two-bit adder](https://github.com/frost-is/TikZ-Diagrams/blob/main/2-bit_adder?raw=true) 
+![A two-bit adder](https://github.com/frost-is/TikZ-Diagrams/blob/main/2-bit_adder.png?raw=true) 
